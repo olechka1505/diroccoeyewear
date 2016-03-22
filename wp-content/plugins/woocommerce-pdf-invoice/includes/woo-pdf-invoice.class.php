@@ -468,10 +468,12 @@ class WooPdfInvoice extends TCPDF
 
                     if ($key == 'taxes') {
                         $field['name'] = preg_replace('/\(\d*\%\)/', '', $field['name']);
+                        $tax_amount = ($this->totals['subtotal']['value'] - $this->totals['cart_discount']['value']) * ($field['rate'] / 100);
                     }
                     $field_name = (isset($field['rate'])) ? $field['name'] . ' (' . floatval($field['rate']) . ' %)' : $field['name'];
                     $this->MultiCell(140, $r, $this->decode($field_name), $this->showBorders, 'L', 0, 1, 340, $y, true, 0, false, false, $r, 'T', false);
-                    $this->MultiCell(80, $r, $this->format_currency($field['amount']), $this->showBorders, 'R', 0, 1, 480, $y, true, 0, false, false, $r, 'T', false);
+//                    $this->MultiCell(80, $r, $this->format_currency($field['amount']), $this->showBorders, 'R', 0, 1, 480, $y, true, 0, false, false, $r, 'T', false);
+                    $this->MultiCell(80, $r, $this->format_currency($tax_amount), $this->showBorders, 'R', 0, 1, 480, $y, true, 0, false, false, $r, 'T', false);
                     $y += $r + $s;
                 }
 
