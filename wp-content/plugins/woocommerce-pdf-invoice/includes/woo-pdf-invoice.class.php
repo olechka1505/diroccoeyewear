@@ -169,11 +169,11 @@ class WooPdfInvoice extends TCPDF
                 $row = array(
                     'name' => $item['name'],
                     'quantity' => $item['qty'],
-                    'meta' => $item_meta,
+                    //'meta' => $item_meta,
                     'images' => $product_images,
                     'net' => $item['line_subtotal'],
-                    'tax_rate' => $this->get_item_tax_rate($item['line_subtotal'], $item['line_subtotal_tax']),
-                    'tax' => $item['line_subtotal_tax'],
+                    //'tax_rate' => $this->get_item_tax_rate($item['line_subtotal'], $item['line_subtotal_tax']),
+                    //'tax' => $item['line_subtotal_tax'],
                     'total' => $this->row_total($item, $this->orderData),
                 );
 
@@ -1100,6 +1100,45 @@ class WooPdfInvoice extends TCPDF
         }
 
         /**
+         * TAXES
+         */
+        // Get all order tax rows if we don't have them yet
+        if (is_null($this->order_tax)) {
+            $this->order_tax = $this->get_order_tax();
+        }
+
+        $totals_taxes = array();
+
+        foreach ($this->order_tax as $tax_key => $tax) {
+            $totals_taxes[$tax_key] = array(
+                'name'      => $tax['label'],
+                'amount'    => ((float) $tax['tax_amount'] + (float) $tax['shipping_tax_amount'])
+            );
+
+            if (isset($tax['woo_pdf_tax_rate'])) {
+                $totals_taxes[$tax_key]['rate'] = (float) $tax['woo_pdf_tax_rate'];
+            }
+        }
+
+        if (empty($totals_taxes)) {
+            $totals_taxes = null;
+        }
+
+        if (!is_null($totals_taxes)) {
+            $totals_taxes = array(
+                'name' => 'Taxes',
+                'value' => $totals_taxes,
+            );
+        }
+
+        /**
+         *  Display taxes before total only if subtotal is displayed excluding taxes (so values sum up nicely)
+         */
+        if ($totals_taxes && !$this->invoiceOptions['woo_pdf_inclusive_tax']) {
+            $totals['taxes'] = $totals_taxes;
+        }
+
+        /**
          * SHIPPING
          */
         if ($this->orderData->order_shipping > 0) {
@@ -1153,45 +1192,6 @@ class WooPdfInvoice extends TCPDF
         }
 
         /**
-         * TAXES
-         */
-        // Get all order tax rows if we don't have them yet
-        if (is_null($this->order_tax)) {
-            $this->order_tax = $this->get_order_tax();
-        }
-
-        $totals_taxes = array();
-
-        foreach ($this->order_tax as $tax_key => $tax) {
-            $totals_taxes[$tax_key] = array(
-                'name'      => $tax['label'],
-                'amount'    => ((float) $tax['tax_amount'] + (float) $tax['shipping_tax_amount'])
-            );
-
-            if (isset($tax['woo_pdf_tax_rate'])) {
-                $totals_taxes[$tax_key]['rate'] = (float) $tax['woo_pdf_tax_rate'];
-            }
-        }
-
-        if (empty($totals_taxes)) {
-            $totals_taxes = null;
-        }
-
-        if (!is_null($totals_taxes)) {
-            $totals_taxes = array(
-                'name' => 'Taxes',
-                'value' => $totals_taxes,
-            );
-        }
-
-        /**
-         *  Display taxes before total only if subtotal is displayed excluding taxes (so values sum up nicely)
-         */
-        if ($totals_taxes && !$this->invoiceOptions['woo_pdf_inclusive_tax']) {
-            $totals['taxes'] = $totals_taxes;
-        }
-
-        /**
          * ORDER DISCOUNT
          */
         if (!WooPDF::wc_version_gte('2.3')) {
@@ -1216,12 +1216,12 @@ class WooPdfInvoice extends TCPDF
         /**
          * Optional total excl. tax row
          */
-        if ($this->invoiceOptions['woo_pdf_total_excl_tax']) {
-            $totals['total_excl_tax'] = array(
-                'name' => $this->invoiceOptions['woo_pdf_title_total_excl_tax'],
-                'value' => (double) ($this->orderData->get_total() - $this->orderData->get_total_tax()),
-            );
-        }
+//        if ($this->invoiceOptions['woo_pdf_total_excl_tax']) {
+//            $totals['total_excl_tax'] = array(
+//                'name' => $this->invoiceOptions['woo_pdf_title_total_excl_tax'],
+//                'value' => (double) ($this->orderData->get_total() - $this->orderData->get_total_tax()),
+//            );
+//        }
 
         /**
          * TOTAL

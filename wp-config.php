@@ -21,9 +21,9 @@
 /** The name of the database for WordPress */
 define('DB_NAME', 'hungryle_wpDiro2');
 /** MySQL database username */
-define('DB_USER', 'hungryle_wpDiro2');
+define('DB_USER', 'root');
 /** MySQL database password */
-define('DB_PASSWORD', ']5P!3pS9C2');
+define('DB_PASSWORD', '1111');
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
 /** Database Charset to use in creating database tables. */

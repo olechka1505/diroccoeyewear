@@ -497,7 +497,7 @@ class WP_Checkout_handler
 
     function payment()
     {
-        global $current_user, $woocommerce;
+        global $current_user, $woocommerce, $wpdb;
         $this->check_permissions();
         $response = array('status' => true);
         $statusCode = 200;
@@ -534,6 +534,17 @@ class WP_Checkout_handler
                 // create order
                 $products = $woocommerce->cart->get_cart();
                 $order = wc_create_order();
+                $coupons_total = $this->get_coupons_total();
+                $coupons = WC()->cart->get_applied_coupons();
+                foreach ($coupons as $coupon) {
+                    $order->add_coupon($coupon, $coupons_total, $coupons_total);
+                }
+                $shipping_method = WC()->session->get( 'chosen_shipping_methods' );
+                $shipping_package = WC()->session->shippinng_rates;
+                if (array_key_exists($shipping_method[0], $shipping_package[0]['rates'])) {
+                    $rate = $shipping_package[0]['rates'][$shipping_method[0]];
+                    $order->add_shipping($rate);
+                }
                 foreach ($products as $product) {
                     $order->add_product(get_product($product['product_id']), $product['quantity']);
                 }
@@ -541,6 +552,7 @@ class WP_Checkout_handler
                 $order->set_address( $this->get_billing_details(), 'billing' );
                 $order->set_address( $this->get_shipping_details(), 'shipping' );
 //                $order->calculate_totals(true);
+                $order->set_total($coupons_total, 'cart_discount');
                 $order->set_total($this->get_cart_total());
 
                 $current_gateway = 'braintree_credit_card';
