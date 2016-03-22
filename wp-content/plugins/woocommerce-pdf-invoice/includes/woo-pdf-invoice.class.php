@@ -1073,16 +1073,17 @@ class WooPdfInvoice extends TCPDF
 
         foreach ($this->orderData->get_items() as $item) {
             if (isset($item['line_subtotal'])) {
-                if ($this->invoiceOptions['woo_pdf_inclusive_tax'] || ($this->multiple_tax_rates && $this->invoiceOptions['woo_pdf_display_tax_inline'] == 0) || $this->invoiceOptions['woo_pdf_display_tax_inline'] == 1) {
-                    $subtotal += floatval($item['line_subtotal']);
-
-                    if (isset($item['line_subtotal_tax'])) {
-                        $subtotal += floatval($item['line_subtotal_tax']);
-                    }
-                }
-                else {
-                    $subtotal += $this->orderData->get_line_subtotal($item);
-                }
+//                if ($this->invoiceOptions['woo_pdf_inclusive_tax'] || ($this->multiple_tax_rates && $this->invoiceOptions['woo_pdf_display_tax_inline'] == 0) || $this->invoiceOptions['woo_pdf_display_tax_inline'] == 1) {
+//                    $subtotal += floatval($item['line_subtotal']);
+//
+//                    if (isset($item['line_subtotal_tax'])) {
+//                        $subtotal += floatval($item['line_subtotal_tax']);
+//                    }
+//                }
+//                else {
+//                    $subtotal += $this->orderData->get_line_subtotal($item);
+//                }
+                $subtotal += $this->orderData->get_line_subtotal($item);
             }
         }
 

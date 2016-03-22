@@ -36,9 +36,10 @@
         </table>
         <div class="col-md-4 col-xs-12 text-right pull-right">
             <div ng-if="completeData.order_info.subtotal" class="text-right"><div ng-bind-html="'SUBTOTAL: ' + completeData.order_info.subtotal"></div>
+                <div ng-if="completeData.order_info.coupons_total" class="text-right">COUPONS: -{{completeData.order_info.coupons_total | currency}}</div>
                 <div class="text-right">TAX: {{completeData.order_info.tax | currency}}</div>
                 <div ng-if="completeData.order_info.shipping_total" class="text-right">SHIPPING: {{completeData.order_info.shipping_total | currency}}</div>
-                <div ng-if="completeData.order_info.coupons_total" class="text-right">COUPONS: -{{completeData.order_info.coupons_total | currency}}</div>
+
                 <div ng-if="completeData.order_info.total" class="text-right">TOTAL: {{completeData.order_info.total | currency}}</div>
 
 			<div class="separator"></div>
