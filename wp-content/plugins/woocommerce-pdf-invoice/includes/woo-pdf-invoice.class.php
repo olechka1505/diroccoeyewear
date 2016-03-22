@@ -174,7 +174,8 @@ class WooPdfInvoice extends TCPDF
                     'net' => $item['line_subtotal'],
                     //'tax_rate' => $this->get_item_tax_rate($item['line_subtotal'], $item['line_subtotal_tax']),
                     //'tax' => $item['line_subtotal_tax'],
-                    'total' => $this->row_total($item, $this->orderData),
+//                    'total' => $this->row_total($item, $this->orderData),
+                    'total' => $item['line_subtotal'],
                 );
 
                 // Check if we need to display product ID/SKU
@@ -463,7 +464,11 @@ class WooPdfInvoice extends TCPDF
 
             // If we reached this point, proceed normally
             if (is_array($value['value'])) {
-                foreach ($value['value'] as $code => $field) {
+                foreach ($value['value'] as $code => &$field) {
+
+                    if ($key == 'taxes') {
+                        $field['name'] = preg_replace('/\(\d*\%\)/', '', $field['name']);
+                    }
                     $field_name = (isset($field['rate'])) ? $field['name'] . ' (' . floatval($field['rate']) . ' %)' : $field['name'];
                     $this->MultiCell(140, $r, $this->decode($field_name), $this->showBorders, 'L', 0, 1, 340, $y, true, 0, false, false, $r, 'T', false);
                     $this->MultiCell(80, $r, $this->format_currency($field['amount']), $this->showBorders, 'R', 0, 1, 480, $y, true, 0, false, false, $r, 'T', false);
@@ -487,7 +492,7 @@ class WooPdfInvoice extends TCPDF
             $this->MultiCell(140, $r, $this->decode($name), $borders_name, 'L', 0, 1, 340, $y, true, 0, false, $auto_padding, $r, 'T', false);
 
             // Value
-            $this->MultiCell(80, $r, $this->format_currency($value['value']), $borders_value, 'R', 0, 1, 480, $y, true, 0, false, $auto_padding, $r, 'T', false);
+            $this->MultiCell(80, $r, ($key == 'cart_discount' ? '-': '') . $this->format_currency($value['value']), $borders_value, 'R', 0, 1, 480, $y, true, 0, false, $auto_padding, $r, 'T', false);
 
             $y += $r + $s + ($key == 'total' ? 10 : 0);
 
