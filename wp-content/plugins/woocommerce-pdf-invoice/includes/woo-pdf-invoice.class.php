@@ -301,7 +301,7 @@ class WooPdfInvoice extends TCPDF
             }
         }
 
-        $this->render_footer();
+        //$this->render_footer();
 
         if ($this->page_count > 1) {
             $this->render_page_numbers();
